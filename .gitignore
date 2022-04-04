@@ -1,0 +1,7 @@
+.phpunit.result.cache
+.idea
+build
+composer.lock
+docs
+vendor
+.php-cs-fixer.cache

@@ -1,0 +1,43 @@
+{
+    "name": "chrishardie/crowdtangle-api",
+    "description": "A minimal PHP implementation of the CrowdTangle API",
+    "keywords": [
+        "ChrisHardie",
+        "crowdtangle",
+        "api"
+    ],
+    "homepage": "https://github.com/chrishardie/crowdtangle-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Chris Hardie",
+            "email": "chris@chrishardie.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "guzzlehttp/guzzle": "^6.2|^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "ChrisHardie\\CrowdtangleApi\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ChrisHardie\\CrowdtangleApi\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
