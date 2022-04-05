@@ -75,7 +75,7 @@ class Client
             && is_numeric($parameters['count'])
             && $parameters['count'] <= 100
             ? $parameters['count']
-            : 100;
+            : min(100, $max_records);
 
         $body = $this->endpointRequest('lists/' . $listId . '/accounts', $parameters);
         $accounts = $body['result']['accounts'];
