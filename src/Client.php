@@ -60,16 +60,38 @@ class Client
      *
      * @link https://github.com/CrowdTangle/API/wiki/List-Accounts
      *
-     * @param int $listId
+     * @param int        $listId
+     * @param array|null $parameters
+     * @param int        $max_records   The maximum number of records to retrieve across pagination calls
      * @return array
      * @throws BadRequest
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getAccountsForList(int $listId): array
+    public function getAccountsForList(int $listId, ?array $parameters = [], int $max_records = 1000): array
     {
-        $body = $this->endpointRequest('lists/' . $listId . '/accounts');
-        return $body['result']['accounts'];
+        // The API supports a maximum of 100 records at a time
+        $parameters['count'] = ! empty($parameters['count'])
+            && is_numeric($parameters['count'])
+            && $parameters['count'] <= 100
+            ? $parameters['count']
+            : 100;
+
+        $body = $this->endpointRequest('lists/' . $listId . '/accounts', $parameters);
+        $accounts = $body['result']['accounts'];
+
+        // If additional accounts under the maximum are available, get them.
+        $loop = 1;
+        while (count($accounts) < $max_records && ! empty($body['result']['pagination']['nextPage'])) {
+            $parameters['offset'] = $parameters['count'] * $loop;
+            $body = $this->endpointRequest('lists/' . $listId . '/accounts', $parameters);
+            foreach ($body['result']['accounts'] as $account) {
+                $accounts[] = $account;
+            }
+            $loop++;
+        }
+
+        return $accounts;
     }
 
     /**
