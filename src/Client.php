@@ -100,15 +100,36 @@ class Client
      * @link https://github.com/CrowdTangle/API/wiki/Posts
      *
      * @param array|null $parameters
+     * @param int        $max_records
      * @return array
      * @throws BadRequest
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getPosts(?array $parameters = []): array
+    public function getPosts(?array $parameters = [], int $max_records = 1000): array
     {
+        // The API supports a maximum of 100 records at a time
+        $parameters['count'] = ! empty($parameters['count'])
+        && is_numeric($parameters['count'])
+        && $parameters['count'] <= 100
+            ? $parameters['count']
+            : min(100, $max_records);
+
         $body = $this->endpointRequest('posts', $parameters);
-        return $body['result']['posts'];
+        $posts = $body['result']['posts'];
+
+        // If additional posts under the maximum are available, get them.
+        $loop = 1;
+        while (count($posts) < $max_records && ! empty($body['result']['pagination']['nextPage'])) {
+            $parameters['offset'] = $parameters['count'] * $loop;
+            $body = $this->endpointRequest('posts', $parameters);
+            foreach ($body['result']['posts'] as $post) {
+                $posts[] = $post;
+            }
+            $loop++;
+        }
+
+        return $posts;
     }
 
     /**
